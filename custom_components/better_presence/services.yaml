@@ -1,0 +1,62 @@
+simulate_tracker:
+  name: Simulate Tracker
+  description: >
+    Inject a fake device tracker state to test Better Presence state machine
+    without real hardware. Does not modify the actual tracker entity.
+  fields:
+    person_id:
+      name: Person ID
+      description: "The ID of the person to simulate (e.g. 'thomas')"
+      required: true
+      example: thomas
+      selector:
+        text:
+    device:
+      name: Device entity ID
+      description: "The entity ID of the tracker to simulate (must be in person's device list)"
+      required: true
+      example: device_tracker.thomas_ping
+      selector:
+        entity:
+          domain: device_tracker
+    state:
+      name: State
+      description: "'home', 'not_home', or a zone name"
+      required: true
+      example: home
+      selector:
+        text:
+    source_type:
+      name: Source type
+      description: "Tracker type: router, bluetooth, gps (default: router)"
+      required: false
+      example: router
+      selector:
+        select:
+          options:
+            - router
+            - bluetooth
+            - gps
+            - bluetooth_le
+    latitude:
+      name: Latitude
+      description: "GPS latitude (only used when source_type is gps)"
+      required: false
+      example: 52.5200
+      selector:
+        number:
+          min: -90
+          max: 90
+          step: any
+          mode: box
+    longitude:
+      name: Longitude
+      description: "GPS longitude (only used when source_type is gps)"
+      required: false
+      example: 13.4050
+      selector:
+        number:
+          min: -180
+          max: 180
+          step: any
+          mode: box

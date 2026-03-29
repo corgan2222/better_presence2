@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" width="640" height="160">
+  <defs>
+    <radialGradient id="pinGradL" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#FFD97A"/>
+      <stop offset="45%" stop-color="#E8A020"/>
+      <stop offset="100%" stop-color="#B36A00"/>
+    </radialGradient>
+    <radialGradient id="glowGradL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadowGradL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="goldenGlowL" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#FFD700" flood-opacity="0.5" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <ellipse cx="80" cy="82" rx="52" ry="58" fill="url(#glowGradL)"/>
+  <ellipse cx="80" cy="152" rx="20" ry="5" fill="url(#shadowGradL)"/>
+
+  <g filter="url(#goldenGlowL)">
+    <path d="M80 8 C56 8 36 28 36 52 C36 76 58 102 80 142 C102 102 124 76 124 52 C124 28 104 8 80 8 Z"
+          fill="url(#pinGradL)"/>
+    <ellipse cx="68" cy="32" rx="12" ry="15" fill="white" opacity="0.22"/>
+    <path d="M80 8 C56 8 36 28 36 52 C36 76 58 102 80 142 C102 102 124 76 124 52 C124 28 104 8 80 8 Z"
+          fill="none" stroke="#FFE599" stroke-width="1.2" opacity="0.6"/>
+  </g>
+
+  <circle cx="80" cy="50" r="24" fill="white" opacity="0.95"/>
+  <circle cx="80" cy="39" r="8.5" fill="#B36A00"/>
+  <path d="M63 65 C63 54 97 54 97 65" fill="#B36A00"/>
+
+  <!-- "Better Presence" starts at x=148, measured end at x=542 -->
+  <text x="148" y="98"
+        font-family="Arial, sans-serif"
+        font-size="52" font-weight="700"
+        fill="#1A56DB">Better Presence</text>
+
+  <!-- "2" starts at x=554 (12px gap after text end at 542) -->
+  <text x="554" y="98"
+        font-family="Arial, sans-serif"
+        font-size="52" font-weight="700"
+        fill="#E8A020">2</text>
+
+  <rect x="148" y="114" width="460" height="3" rx="2" fill="#E8A020" opacity="0.4"/>
+
+</svg>

@@ -1,0 +1,87 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Better Presence 2.0 — Globale Einstellungen",
+        "data": {
+          "just_arrived_time": "Dauer \"Gerade angekommen\" (Sekunden)",
+          "just_left_time": "Dauer \"Gerade weggegangen\" (Sekunden)",
+          "home_state": "Bezeichnung für Zuhause",
+          "just_arrived_state": "Bezeichnung für Gerade angekommen",
+          "just_left_state": "Bezeichnung für Gerade weggegangen",
+          "away_state": "Bezeichnung für Abwesend",
+          "far_away_state": "Bezeichnung für Weit weg",
+          "far_away_distance": "Entfernungsschwelle für Weit weg (km, 0 = deaktiviert)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Es ist nur eine Instanz von Better Presence erlaubt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Personen verwalten",
+        "description": "Aktuelle Personen: {persons}",
+        "data": {
+          "action": "Aktion"
+        }
+      },
+      "add_person": {
+        "title": "Person hinzufügen — Schritt 1: Name",
+        "description": "Die **Device_tracker-Entity-ID** wird der Entity-Name (z.B. \"stefan_bp2\" erstellt device_tracker.better_presence_stefan_bp2). Der **Anzeigename** erscheint in der UI und in Automationen.",
+        "data": {
+          "id": "Device_tracker-Entity-ID (z.B. stefan_bp2)",
+          "friendly_name": "Anzeigename (z.B. Stefan BP2)"
+        }
+      },
+      "add_person_details": {
+        "title": "Person hinzufügen — Schritt 2: Geräte-Tracker",
+        "description": "Wähle einen oder mehrere Device Tracker. Optimal: Mobile App Tracker. Zusätzlich empfohlen: ping oder nmap Tracker für zuverlässigere Erkennung zuhause.",
+        "data": {
+          "devices": "Geräte-Tracker"
+        }
+      },
+      "edit_settings": {
+        "title": "Globale Einstellungen bearbeiten",
+        "data": {
+          "just_arrived_time": "Dauer \"Gerade angekommen\" (Sekunden)",
+          "just_left_time": "Dauer \"Gerade weggegangen\" (Sekunden)",
+          "home_state": "Bezeichnung für Zuhause",
+          "just_arrived_state": "Bezeichnung für Gerade angekommen",
+          "just_left_state": "Bezeichnung für Gerade weggegangen",
+          "away_state": "Bezeichnung für Abwesend",
+          "far_away_state": "Bezeichnung für Weit weg",
+          "far_away_distance": "Entfernungsschwelle für Weit weg (km, 0 = deaktiviert)"
+        }
+      },
+      "edit_person_select": {
+        "title": "Person bearbeiten — Auswahl",
+        "data": {
+          "id": "Zu bearbeitende Person"
+        }
+      },
+      "edit_person_details": {
+        "title": "Person bearbeiten — {person_id}",
+        "description": "Wähle einen oder mehrere Device Tracker. Optimal: Mobile App Tracker. Zusätzlich empfohlen: ping oder nmap Tracker für zuverlässigere Erkennung zuhause.",
+        "data": {
+          "friendly_name": "Anzeigename",
+          "devices": "Geräte-Tracker"
+        }
+      },
+      "remove_person": {
+        "title": "Person entfernen",
+        "data": {
+          "id": "Zu entfernende Person"
+        }
+      }
+    },
+    "error": {
+      "person_id_exists": "Eine Person mit dieser ID existiert bereits."
+    },
+    "abort": {
+      "no_persons": "Es sind noch keine Personen konfiguriert."
+    }
+  }
+}

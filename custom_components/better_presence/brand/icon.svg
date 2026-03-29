@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="pinGrad" cx="38%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#FFD97A"/>
+      <stop offset="45%" stop-color="#E8A020"/>
+      <stop offset="100%" stop-color="#B36A00"/>
+    </radialGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="goldenGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#FFD700" flood-opacity="0.5" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Soft golden ambient glow behind pin -->
+  <ellipse cx="128" cy="110" rx="72" ry="80" fill="url(#glowGrad)"/>
+
+  <!-- Drop shadow ellipse below pin -->
+  <ellipse cx="128" cy="228" rx="32" ry="8" fill="url(#shadowGrad)"/>
+
+  <!-- Map pin shape with golden glow filter -->
+  <g filter="url(#goldenGlow)">
+    <path d="M128 18
+             C92 18 62 48 62 84
+             C62 120 96 158 128 218
+             C160 158 194 120 194 84
+             C194 48 164 18 128 18 Z"
+          fill="url(#pinGrad)"/>
+    <!-- Specular highlight top-left -->
+    <ellipse cx="110" cy="58" rx="18" ry="22" fill="white" opacity="0.22"/>
+    <!-- Thin bright rim -->
+    <path d="M128 18
+             C92 18 62 48 62 84
+             C62 120 96 158 128 218
+             C160 158 194 120 194 84
+             C194 48 164 18 128 18 Z"
+          fill="none" stroke="#FFE599" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- White circle background inside pin -->
+  <circle cx="128" cy="82" r="38" fill="white" opacity="0.95"/>
+
+  <!-- Person silhouette in dark gold -->
+  <circle cx="128" cy="64" r="13" fill="#B36A00"/>
+  <path d="M103 104 C103 86 153 86 153 104" fill="#B36A00"/>
+
+</svg>

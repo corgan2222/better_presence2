@@ -1,0 +1,87 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Better Presence 2.0 — Global Settings",
+        "data": {
+          "just_arrived_time": "Just Arrived duration (seconds)",
+          "just_left_time": "Just Left duration (seconds)",
+          "home_state": "Home state label",
+          "just_arrived_state": "Just Arrived label",
+          "just_left_state": "Just Left label",
+          "away_state": "Away label",
+          "far_away_state": "Far Away label",
+          "far_away_distance": "Far Away distance threshold (km, 0 = disabled)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only one Better Presence instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Manage Persons",
+        "description": "Current persons: {persons}",
+        "data": {
+          "action": "Action"
+        }
+      },
+      "add_person": {
+        "title": "Add Person — Step 1: Name",
+        "description": "The **Sensor entity ID** becomes the entity name (e.g. \"thomas_bp2\" creates sensor.better_presence_thomas_bp2). The **Display name** is shown in the UI and automations.",
+        "data": {
+          "id": "Sensor entity ID (e.g. thomas_bp2)",
+          "friendly_name": "Display name (e.g. Thomas)"
+        }
+      },
+      "add_person_details": {
+        "title": "Add Person — Step 2: Device Trackers",
+        "description": "Select one or more device trackers. Best choice: Mobile App tracker. Additionally recommended: ping or nmap tracker for more reliable home detection.",
+        "data": {
+          "devices": "Device trackers"
+        }
+      },
+      "edit_settings": {
+        "title": "Edit Global Settings",
+        "data": {
+          "just_arrived_time": "Just Arrived duration (seconds)",
+          "just_left_time": "Just Left duration (seconds)",
+          "home_state": "Home state label",
+          "just_arrived_state": "Just Arrived label",
+          "just_left_state": "Just Left label",
+          "away_state": "Away label",
+          "far_away_state": "Far Away label",
+          "far_away_distance": "Far Away distance threshold (km, 0 = disabled)"
+        }
+      },
+      "edit_person_select": {
+        "title": "Edit Person — Select",
+        "data": {
+          "id": "Person to edit"
+        }
+      },
+      "edit_person_details": {
+        "title": "Edit Person — {person_id}",
+        "description": "Select one or more device trackers. Best choice: Mobile App tracker. Additionally recommended: ping or nmap tracker for more reliable home detection.",
+        "data": {
+          "friendly_name": "Display name",
+          "devices": "Device trackers"
+        }
+      },
+      "remove_person": {
+        "title": "Remove Person",
+        "data": {
+          "id": "Person to remove"
+        }
+      }
+    },
+    "error": {
+      "person_id_exists": "A person with this ID already exists."
+    },
+    "abort": {
+      "no_persons": "No persons configured yet."
+    }
+  }
+}
