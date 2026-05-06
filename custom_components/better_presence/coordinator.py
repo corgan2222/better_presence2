@@ -336,7 +336,10 @@ class BetterPresenceCoordinator:
                 return "not_home"
             return translated
 
-        return "not_home"
+        # All trackers are unavailable/unknown and no cached state exists yet.
+        # Return None so _evaluate_person preserves the current state instead of
+        # falsely transitioning to away (which would trigger just_arrived on reconnect).
+        return None
 
     def _translate_state(self, state: str) -> str:
         return {
