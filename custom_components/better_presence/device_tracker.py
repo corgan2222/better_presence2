@@ -30,6 +30,7 @@ class BetterPresenceEntity(TrackerEntity):
     """Represents a single person's Better Presence state as a device_tracker entity."""
 
     _attr_should_poll = False
+    _attr_has_entity_name = True
 
     def __init__(self, coordinator: BetterPresenceCoordinator, person_id: str) -> None:
         self._coordinator = coordinator
