@@ -11,6 +11,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import BetterPresenceCoordinator
 
+# Push-based integration — no polling, unlimited parallel updates.
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
