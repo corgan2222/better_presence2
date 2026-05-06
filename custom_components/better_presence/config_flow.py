@@ -13,23 +13,23 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
-    DOMAIN,
-    CONF_TRACKING,
-    CONF_PERSONS,
-    CONF_JUST_ARRIVED_TIME,
-    CONF_JUST_LEFT_TIME,
+    CONF_AWAY_STATE,
+    CONF_FAR_AWAY_DISTANCE,
+    CONF_FAR_AWAY_STATE,
     CONF_HOME_STATE,
     CONF_JUST_ARRIVED_STATE,
+    CONF_JUST_ARRIVED_TIME,
     CONF_JUST_LEFT_STATE,
-    CONF_AWAY_STATE,
-    CONF_FAR_AWAY_STATE,
-    CONF_FAR_AWAY_DISTANCE,
-    CONF_PERSON_ID,
-    CONF_PERSON_FRIENDLY_NAME,
+    CONF_JUST_LEFT_TIME,
     CONF_PERSON_DEVICES,
+    CONF_PERSON_FRIENDLY_NAME,
+    CONF_PERSON_ID,
+    CONF_PERSONS,
+    CONF_TRACKING,
+    DEFAULT_FAR_AWAY_DISTANCE,
     DEFAULT_JUST_ARRIVED_TIME,
     DEFAULT_JUST_LEFT_TIME,
-    DEFAULT_FAR_AWAY_DISTANCE,
+    DOMAIN,
 )
 
 # Language-specific state label defaults
@@ -58,11 +58,12 @@ def _state_defaults(language: str) -> dict:
 
 
 def _tracking_schema(language: str, current: dict | None = None) -> vol.Schema:
-    """Build the tracking settings schema with language-aware defaults.
+    """
+    Build the tracking settings schema with language-aware defaults.
 
     When *current* is given (edit mode), existing values are used as defaults.
     """
-    d = current if current else {}
+    d = current or {}
     s = _state_defaults(language)
     return vol.Schema(
         {
@@ -239,7 +240,10 @@ class BetterPresenceOptionsFlow(config_entries.OptionsFlow):
         )
 
     def _build_device_tracker_selector(self) -> SelectSelector:
-        """Build a SelectSelector showing friendly name, entity ID and integration; mobile_app first."""
+        """Build a SelectSelector showing friendly name, entity ID and integration.
+
+        mobile_app entries are listed first.
+        """
         entity_registry = er.async_get(self.hass)
         states = self.hass.states.async_all("device_tracker")
 

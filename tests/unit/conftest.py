@@ -13,5 +13,8 @@ import pytest_socket
 
 @pytest.hookimpl(trylast=True)
 def pytest_runtest_setup(item):
-    """Re-enable sockets for all tests in this directory (runs after pytest-socket disables them)."""
+    """Re-enable sockets for all tests in this directory.
+
+    Runs after pytest-socket disables them.
+    """
     pytest_socket.enable_socket()

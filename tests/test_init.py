@@ -1,12 +1,11 @@
 """Tests for integration setup and teardown."""
 
-import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
+import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.better_presence.const import DOMAIN
-
 
 MOCK_CONFIG = {
     "tracking": {

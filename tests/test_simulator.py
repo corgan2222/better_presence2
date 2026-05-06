@@ -1,13 +1,12 @@
 """Tests for the simulate_tracker service."""
 
-import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
+import pytest
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.better_presence.const import DOMAIN, DEFAULT_HOME_STATE
-
+from custom_components.better_presence.const import DEFAULT_HOME_STATE, DOMAIN
 
 MOCK_CONFIG = {
     "tracking": {
