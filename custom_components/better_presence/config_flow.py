@@ -290,8 +290,11 @@ class BetterPresenceOptionsFlow(config_entries.OptionsFlow):
     async def async_step_edit_person_details(self, user_input=None):
         """Edit friendly name and device trackers for an existing person."""
         person = next(
-            p for p in self._persons if p[CONF_PERSON_ID] == self._edit_person_id
+            (p for p in self._persons if p[CONF_PERSON_ID] == self._edit_person_id),
+            None,
         )
+        if person is None:
+            return self.async_abort(reason="person_not_found")
 
         if user_input is not None:
             person[CONF_PERSON_FRIENDLY_NAME] = user_input[
