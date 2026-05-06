@@ -1,3 +1,4 @@
+---
 simulate_tracker:
   name: Simulate Tracker
   description: >
@@ -13,7 +14,9 @@ simulate_tracker:
         text:
     device:
       name: Device entity ID
-      description: "The entity ID of the tracker to simulate (must be in person's device list)"
+      description: >
+        The entity ID of the tracker to simulate (must be in person's
+        device list)
       required: true
       example: device_tracker.thomas_ping
       selector:

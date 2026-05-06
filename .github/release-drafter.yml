@@ -1,3 +1,4 @@
+---
 categories:
   - title: ":boom: Breaking Changes"
     label: "breaking"
@@ -27,9 +28,9 @@ template: |
   ## Check list (to be removed before releasing)
 
   [ ] Check stable version reference in documentation is updated
-  
+
   ## Overview of changes
 
-  ## Changes 
+  ## Changes
 
   $CHANGES
