@@ -36,6 +36,8 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+_IGNORED_TRACKER_STATES = {"unavailable", "unknown"}
+
 
 class PersonTrackingState:
     """Holds runtime state for one tracked person."""
@@ -57,6 +59,7 @@ class BetterPresenceCoordinator:
         self._persons: dict[str, PersonTrackingState] = {}
         self._unsub_listeners: list[Callable] = []
         self._update_callbacks: list[Callable] = []
+        self._last_known_tracker_states: dict[str, Any] = {}
 
         for person in config.get(CONF_PERSONS, []):
             pid = person[CONF_PERSON_ID]
@@ -250,7 +253,18 @@ class BetterPresenceCoordinator:
             if s is None:
                 _LOGGER.warning("Tracker %s not found in HA", did)
                 continue
-            valid_states.append(s)
+            if s.state.lower() in _IGNORED_TRACKER_STATES:
+                cached = self._last_known_tracker_states.get(did)
+                if cached is not None:
+                    _LOGGER.debug(
+                        "Tracker %s is %s, using last known state: %s",
+                        did, s.state, cached.state,
+                    )
+                    valid_states.append(cached)
+                # else: no prior state known yet — skip entirely
+            else:
+                self._last_known_tracker_states[did] = s
+                valid_states.append(s)
 
         # WiFi/BT with state=home → immediately home (stable)
         for s in valid_states:
