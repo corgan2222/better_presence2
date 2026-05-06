@@ -219,15 +219,19 @@ class BetterPresenceOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_add_person_details(self, user_input=None):
         """Step 2: select device trackers."""
+        errors: dict[str, str] = {}
         if user_input is not None:
-            self._persons.append(
-                {
-                    CONF_PERSON_ID: self._new_person_id,
-                    CONF_PERSON_FRIENDLY_NAME: self._new_person_friendly_name,
-                    CONF_PERSON_DEVICES: user_input[CONF_PERSON_DEVICES],
-                }
-            )
-            return await self._save_and_reload()
+            if not user_input[CONF_PERSON_DEVICES]:
+                errors[CONF_PERSON_DEVICES] = "no_devices_selected"
+            else:
+                self._persons.append(
+                    {
+                        CONF_PERSON_ID: self._new_person_id,
+                        CONF_PERSON_FRIENDLY_NAME: self._new_person_friendly_name,
+                        CONF_PERSON_DEVICES: user_input[CONF_PERSON_DEVICES],
+                    }
+                )
+                return await self._save_and_reload()
 
         device_tracker_selector = self._build_device_tracker_selector()
         return self.async_show_form(
@@ -237,6 +241,7 @@ class BetterPresenceOptionsFlow(config_entries.OptionsFlow):
                     vol.Required(CONF_PERSON_DEVICES): device_tracker_selector,
                 }
             ),
+            errors=errors,
         )
 
     def _build_device_tracker_selector(self) -> SelectSelector:
