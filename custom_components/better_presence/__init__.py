@@ -98,8 +98,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Remove service if this was the last loaded entry
     if unload_ok and not any(
-        e.entry_id != entry.entry_id
-        and e.state is ConfigEntryState.LOADED
+        e.entry_id != entry.entry_id and e.state is ConfigEntryState.LOADED
         for e in hass.config_entries.async_entries(DOMAIN)
     ):
         hass.services.async_remove(DOMAIN, "simulate_tracker")
