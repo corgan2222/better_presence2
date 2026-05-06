@@ -40,6 +40,9 @@ ignore = [
 ]
 
 [lint.per-file-ignores]
+"custom_components/better_presence/device_tracker.py" = [
+    "ARG001",  # hass is required by HA platform setup signature even when unused
+]
 "tests/**" = [
     "S101",    # assert is pytest idiom
     "SLF001",  # tests routinely inspect private state

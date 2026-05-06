@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 
 import voluptuous as vol
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
 
@@ -44,11 +44,9 @@ async def async_unload_platforms(
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Better Presence from a config entry."""
-    hass.data.setdefault(DOMAIN, {})
-
     coordinator = BetterPresenceCoordinator(hass, dict(entry.data))
     await coordinator.async_setup()
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    entry.runtime_data = coordinator
 
     await async_forward_entry_setups(hass, entry, PLATFORMS)
 
@@ -59,9 +57,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             person_id = call.data["person_id"]
             coord: BetterPresenceCoordinator | None = next(
                 (
-                    c
-                    for c in hass.data[DOMAIN].values()
-                    if person_id in c.get_person_ids()
+                    e.runtime_data
+                    for e in hass.config_entries.async_entries(DOMAIN)
+                    if e.state is ConfigEntryState.LOADED
+                    and person_id in e.runtime_data.get_person_ids()
                 ),
                 None,
             )
@@ -93,16 +92,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    coordinator: BetterPresenceCoordinator = hass.data[DOMAIN].get(entry.entry_id)
-    if coordinator:
-        await coordinator.async_unload()
+    await entry.runtime_data.async_unload()
 
     unload_ok = await async_unload_platforms(hass, entry, PLATFORMS)
 
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id, None)
-
-    if not hass.data[DOMAIN]:
+    # Remove service if this was the last loaded entry
+    if unload_ok and not any(
+        e.entry_id != entry.entry_id and e.state is ConfigEntryState.LOADED
+        for e in hass.config_entries.async_entries(DOMAIN)
+    ):
         hass.services.async_remove(DOMAIN, "simulate_tracker")
 
     return unload_ok
