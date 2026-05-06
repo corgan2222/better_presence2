@@ -8,11 +8,47 @@ select = [
 ]
 
 ignore = [
-    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
-    "D203", # no-blank-line-before-class (incompatible with formatter)
-    "D212", # multi-line-summary-first-line (incompatible with formatter)
-    "COM812", # incompatible with formatter
-    "ISC001", # incompatible with formatter
+    # formatter incompatibilities
+    "COM812",
+    "ISC001",
+    # docstring style — pick one set
+    "D203",
+    "D212",
+    # type annotations — retrofit in a dedicated PR
+    "ANN",
+    # boolean positional args — common in HA helpers
+    "FBT001",
+    "FBT002",
+    "FBT003",
+    # TYPE_CHECKING guards — not yet adopted
+    "TC001",
+    "TC002",
+    "TC003",
+    # docstrings — not fully covered yet
+    "D",
+    # private member access — valid within same package
+    "SLF001",
+    # commented-out code — used for explanatory inline notes
+    "ERA001",
+    # too many branches/arguments — state machine is intentionally complex
+    "PLR0912",
+    "PLR0913",
+    # magic values — thresholds are self-documenting
+    "PLR2004",
+    # uppercase variable names — math convention (R in haversine)
+    "N806",
+]
+
+[lint.per-file-ignores]
+"tests/**" = [
+    "S101",    # assert is pytest idiom
+    "SLF001",  # tests routinely inspect private state
+    "ANN",     # no annotations required in tests
+    "D",       # no docstrings required in tests
+    "PLR",     # pylint style not enforced in tests
+    "ARG001",  # pytest fixtures are injected for side effects, not always used directly
+    "RET504",  # assignment before return aids test readability
+    "PLC0415", # lazy imports used for patching in some test patterns
 ]
 
 [lint.flake8-pytest-style]
