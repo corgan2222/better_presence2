@@ -184,6 +184,10 @@ class BetterPresenceCoordinator:
         left_time = settings.get(CONF_JUST_LEFT_TIME, DEFAULT_JUST_LEFT_TIME)
 
         raw = self._get_aggregate_state(devices)
+        if raw is None:
+            # All trackers unavailable and no cached state yet — preserve
+            # current state so a restart never triggers arrival/departure transitions.
+            return
         current = person_state.state
 
         if raw == "home":
@@ -242,8 +246,8 @@ class BetterPresenceCoordinator:
     # Internal: device state aggregation
     # ------------------------------------------------------------------
 
-    def _get_aggregate_state(self, devices: list[str]) -> str:
-        """Return 'home', 'not_home', or a zone name for the device list."""
+    def _get_aggregate_state(self, devices: list[str]) -> str | None:
+        """Return 'home', 'not_home', a zone name, or None if no valid data yet."""
         valid_states = []
         for did in devices:
             s = self.hass.states.get(did)
