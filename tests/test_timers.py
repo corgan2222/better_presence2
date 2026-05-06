@@ -1,18 +1,18 @@
 """Tests for timer-triggered state transitions in BetterPresenceCoordinator."""
 
-import pytest
 from datetime import timedelta
 
+import pytest
 from homeassistant.util.dt import utcnow
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
-from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 from custom_components.better_presence.const import (
+    DEFAULT_AWAY_STATE,
     DEFAULT_HOME_STATE,
     DEFAULT_JUST_ARRIVED_STATE,
     DEFAULT_JUST_LEFT_STATE,
-    DEFAULT_AWAY_STATE,
 )
+from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 
 
 def make_config(just_arrived_time=5, just_left_time=3) -> dict:

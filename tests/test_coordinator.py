@@ -1,16 +1,16 @@
 """Tests for BetterPresenceCoordinator state machine (no timers)."""
 
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
-from datetime import datetime, timezone, timedelta
 
-from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 from custom_components.better_presence.const import (
+    DEFAULT_AWAY_STATE,
+    DEFAULT_FAR_AWAY_STATE,
     DEFAULT_HOME_STATE,
     DEFAULT_JUST_ARRIVED_STATE,
     DEFAULT_JUST_LEFT_STATE,
-    DEFAULT_AWAY_STATE,
-    DEFAULT_FAR_AWAY_STATE,
 )
+from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 
 
 def make_hass(tracker_states: dict) -> MagicMock:
@@ -26,8 +26,8 @@ def make_hass(tracker_states: dict) -> MagicMock:
         state = MagicMock()
         state.state = data["state"]
         state.attributes = data.get("attributes", {})
-        state.last_changed = data.get("last_changed", datetime.now(timezone.utc))
-        state.last_updated = data.get("last_updated", datetime.now(timezone.utc))
+        state.last_changed = data.get("last_changed", datetime.now(UTC))
+        state.last_updated = data.get("last_updated", datetime.now(UTC))
         return state
 
     hass.states.get = get_state
@@ -214,7 +214,7 @@ def test_wifi_home_beats_gps_not_home():
 
 
 def test_gps_stale_does_not_count_as_home():
-    stale = datetime.now(timezone.utc) - timedelta(hours=2)
+    stale = datetime.now(UTC) - timedelta(hours=2)
     hass = make_hass(
         {
             "device_tracker.gps": {
@@ -229,7 +229,7 @@ def test_gps_stale_does_not_count_as_home():
 
 
 def test_gps_fresh_counts_as_home():
-    fresh = datetime.now(timezone.utc) - timedelta(minutes=10)
+    fresh = datetime.now(UTC) - timedelta(minutes=10)
     hass = make_hass(
         {
             "device_tracker.gps": {
@@ -258,7 +258,7 @@ def test_update_callback_called_on_state_change():
 
 def test_stale_gps_home_not_returned_as_home_via_zone_loop():
     """Third GPS loop must not return stale 'home' GPS state."""
-    stale = datetime.now(timezone.utc) - timedelta(hours=2)
+    stale = datetime.now(UTC) - timedelta(hours=2)
     hass = make_hass(
         {
             "device_tracker.gps": {
