@@ -2,11 +2,11 @@
 
 from unittest.mock import MagicMock
 
-from custom_components.better_presence.device_tracker import BetterPresenceEntity
 from custom_components.better_presence.coordinator import (
     BetterPresenceCoordinator,
     PersonTrackingState,
 )
+from custom_components.better_presence.device_tracker import BetterPresenceEntity
 
 
 def make_coordinator_mock(state="Home", attributes=None) -> MagicMock:

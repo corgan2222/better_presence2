@@ -1,6 +1,7 @@
 """Shared test fixtures for Better Presence 2.0."""
 
 import asyncio
+
 import pytest
 import pytest_socket
 
@@ -10,7 +11,7 @@ pytest_plugins = ["pytest_homeassistant_custom_component"]
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Enable custom integrations in the test directory."""
-    yield
+    return
 
 
 @pytest.fixture
