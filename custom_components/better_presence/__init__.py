@@ -56,15 +56,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.services.has_service(DOMAIN, "simulate_tracker"):
 
         async def _handle_simulate(call: ServiceCall) -> None:
-            entry_id = next(iter(hass.data[DOMAIN]), None)
-            if entry_id is None:
+            person_id = call.data["person_id"]
+            coord: BetterPresenceCoordinator | None = next(
+                (
+                    c
+                    for c in hass.data[DOMAIN].values()
+                    if person_id in c.get_person_ids()
+                ),
+                None,
+            )
+            if coord is None:
                 _LOGGER.error(
-                    "Better Presence: no config entry found for simulate_tracker"
+                    "Better Presence: no coordinator found for person %s",
+                    person_id,
                 )
                 return
-            coord: BetterPresenceCoordinator = hass.data[DOMAIN][entry_id]
             coord.simulate_tracker(
-                person_id=call.data["person_id"],
+                person_id=person_id,
                 device=call.data["device"],
                 state=call.data["state"],
                 source_type=call.data["source_type"],
