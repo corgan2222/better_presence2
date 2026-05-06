@@ -9,7 +9,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
 from .coordinator import BetterPresenceCoordinator
 
 
@@ -19,7 +18,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Better Presence device tracker entities from a config entry."""
-    coordinator: BetterPresenceCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator: BetterPresenceCoordinator = entry.runtime_data
     entities = [
         BetterPresenceEntity(coordinator, person_id)
         for person_id in coordinator.get_person_ids()
