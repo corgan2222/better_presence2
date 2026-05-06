@@ -190,11 +190,22 @@ class BetterPresenceCoordinator:
             return
         current = person_state.state
 
+        # Zone name: any raw state that is neither "home" nor "not_home"
+        # e.g. "gym", "work", "office" — passed through from the GPS tracker.
+        _named = {"", "home", "not_home"}
+        zone_name: str | None = raw if raw not in _named else None
+
         if raw == "home":
             if current == "":
                 # Initial state: already home, no transition needed
                 self._set_state(person_id, home_st, devices)
-            elif current in (away_st, far_st):
+            elif current in (away_st, far_st) or current not in (
+                "",
+                arrived_st,
+                home_st,
+                left_st,
+            ):
+                # Returning from away, far_away, or a named zone → just arrived
                 self._set_state(person_id, arrived_st, devices)
                 self._start_timer(person_id, arrived_time)
             elif current == left_st:
@@ -208,21 +219,33 @@ class BetterPresenceCoordinator:
                 # else: stay in just_arrived until timer fires
             else:
                 self._set_state(person_id, home_st, devices)
-        # not home
+        # not home (raw == "not_home" or a zone name)
         elif current == "":
-            # Initial state: already away, no transition needed
-            new = self._resolve_away_state(devices, far_st, away_st, far_dist)
+            # Initial state: already away/in zone, no transition needed
+            new = self._resolve_away_state(
+                devices, far_st, away_st, far_dist, zone_name
+            )
             self._set_state(person_id, new, devices)
         elif current in (arrived_st, home_st):
             self._set_state(person_id, left_st, devices)
             self._start_timer(person_id, left_time)
         elif current == left_st:
             if from_timer:
-                new = self._resolve_away_state(devices, far_st, away_st, far_dist)
+                new = self._resolve_away_state(
+                    devices, far_st, away_st, far_dist, zone_name
+                )
                 self._set_state(person_id, new, devices)
             # else: stay in just_left
-        elif current in (away_st, far_st):
-            new = self._resolve_away_state(devices, far_st, away_st, far_dist)
+        elif current in (away_st, far_st) or current not in (
+            "",
+            arrived_st,
+            home_st,
+            left_st,
+        ):
+            # Handles away↔far_away, away/far→zone, zone→zone, zone→away transitions
+            new = self._resolve_away_state(
+                devices, far_st, away_st, far_dist, zone_name
+            )
             if new != current:
                 self._set_state(person_id, new, devices)
         else:
@@ -235,7 +258,11 @@ class BetterPresenceCoordinator:
         far_st: str,
         away_st: str,
         far_dist: float,
+        zone_name: str | None = None,
     ) -> str:
+        # A named HA zone (gym, work, …) takes precedence over far_away / away.
+        if zone_name is not None:
+            return zone_name
         if far_dist > 0:
             dist = self._get_distance(devices)
             if dist is not None and dist > far_dist:
