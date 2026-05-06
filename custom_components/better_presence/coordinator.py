@@ -4,34 +4,35 @@ from __future__ import annotations
 
 import logging
 import math
-from datetime import datetime, timezone
-from typing import Any, Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
-from homeassistant.core import HomeAssistant, callback, Event
+from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 
 from .const import (
-    CONF_TRACKING,
-    CONF_PERSONS,
-    CONF_PERSON_ID,
-    CONF_PERSON_DEVICES,
-    CONF_PERSON_FRIENDLY_NAME,
-    CONF_JUST_ARRIVED_TIME,
-    CONF_JUST_LEFT_TIME,
+    CONF_AWAY_STATE,
+    CONF_FAR_AWAY_DISTANCE,
+    CONF_FAR_AWAY_STATE,
     CONF_HOME_STATE,
     CONF_JUST_ARRIVED_STATE,
+    CONF_JUST_ARRIVED_TIME,
     CONF_JUST_LEFT_STATE,
-    CONF_AWAY_STATE,
-    CONF_FAR_AWAY_STATE,
-    CONF_FAR_AWAY_DISTANCE,
-    DEFAULT_JUST_ARRIVED_TIME,
-    DEFAULT_JUST_LEFT_TIME,
+    CONF_JUST_LEFT_TIME,
+    CONF_PERSON_DEVICES,
+    CONF_PERSON_FRIENDLY_NAME,
+    CONF_PERSON_ID,
+    CONF_PERSONS,
+    CONF_TRACKING,
+    DEFAULT_AWAY_STATE,
+    DEFAULT_FAR_AWAY_DISTANCE,
+    DEFAULT_FAR_AWAY_STATE,
     DEFAULT_HOME_STATE,
     DEFAULT_JUST_ARRIVED_STATE,
+    DEFAULT_JUST_ARRIVED_TIME,
     DEFAULT_JUST_LEFT_STATE,
-    DEFAULT_AWAY_STATE,
-    DEFAULT_FAR_AWAY_STATE,
-    DEFAULT_FAR_AWAY_DISTANCE,
+    DEFAULT_JUST_LEFT_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -203,30 +204,26 @@ class BetterPresenceCoordinator:
                 # else: stay in just_arrived until timer fires
             else:
                 self._set_state(person_id, home_st, devices)
-        else:
-            # not home
-            if current == "":
-                # Initial state: already away, no transition needed
+        # not home
+        elif current == "":
+            # Initial state: already away, no transition needed
+            new = self._resolve_away_state(devices, far_st, away_st, far_dist)
+            self._set_state(person_id, new, devices)
+        elif current in (arrived_st, home_st):
+            self._set_state(person_id, left_st, devices)
+            self._start_timer(person_id, left_time)
+        elif current == left_st:
+            if from_timer:
                 new = self._resolve_away_state(devices, far_st, away_st, far_dist)
                 self._set_state(person_id, new, devices)
-            elif current == arrived_st:
-                self._set_state(person_id, left_st, devices)
-                self._start_timer(person_id, left_time)
-            elif current == home_st:
-                self._set_state(person_id, left_st, devices)
-                self._start_timer(person_id, left_time)
-            elif current == left_st:
-                if from_timer:
-                    new = self._resolve_away_state(devices, far_st, away_st, far_dist)
-                    self._set_state(person_id, new, devices)
-                # else: stay in just_left
-            elif current in (away_st, far_st):
-                new = self._resolve_away_state(devices, far_st, away_st, far_dist)
-                if new != current:
-                    self._set_state(person_id, new, devices)
-            else:
-                # Unknown / custom state — fall back to away
-                self._set_state(person_id, away_st, devices)
+            # else: stay in just_left
+        elif current in (away_st, far_st):
+            new = self._resolve_away_state(devices, far_st, away_st, far_dist)
+            if new != current:
+                self._set_state(person_id, new, devices)
+        else:
+            # Unknown / custom state — fall back to away
+            self._set_state(person_id, away_st, devices)
 
     def _resolve_away_state(
         self,
@@ -258,7 +255,9 @@ class BetterPresenceCoordinator:
                 if cached is not None:
                     _LOGGER.debug(
                         "Tracker %s is %s, using last known state: %s",
-                        did, s.state, cached.state,
+                        did,
+                        s.state,
+                        cached.state,
                     )
                     valid_states.append(cached)
                 # else: no prior state known yet — skip entirely
@@ -275,13 +274,13 @@ class BetterPresenceCoordinator:
 
         # GPS with state=home AND updated within 60 min → home
         for s in valid_states:
-            if self._translate_state(s.state) == "home":
-                if s.attributes.get("source_type") == "gps":
-                    age = (
-                        datetime.now(timezone.utc) - s.last_updated
-                    ).total_seconds() / 60
-                    if age < 60:
-                        return "home"
+            if (
+                self._translate_state(s.state) == "home"
+                and s.attributes.get("source_type") == "gps"
+            ):
+                age = (datetime.now(UTC) - s.last_updated).total_seconds() / 60
+                if age < 60:
+                    return "home"
 
         # Not home: return GPS tracker state (zone name) if available
         # Only use GPS state if it's NOT home (stale home GPS should not count)
@@ -297,7 +296,7 @@ class BetterPresenceCoordinator:
         non_gps_states = [
             s for s in valid_states if s.attributes.get("source_type") != "gps"
         ]
-        fallback_states = non_gps_states if non_gps_states else valid_states
+        fallback_states = non_gps_states or valid_states
         if fallback_states:
             latest = max(fallback_states, key=lambda x: x.last_changed)
             translated = self._translate_state(latest.state)
