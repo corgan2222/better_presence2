@@ -17,16 +17,16 @@ Home Assistant's built-in `person` entity only knows `home` and `not_home`. Devi
 
 Better Presence solves this with buffer states:
 
-| Feature | HA Native | Better Presence |
-| --- | --- | --- |
-| `home` / `not_home` | ✅ | ✅ |
-| Zones | ✅ | ✅ |
-| **"Just arrived"** (transition state) | ❌ | ✅ |
-| **"Just left"** (transition state) | ❌ | ✅ |
-| **"Far away"** (distance threshold) | ❌ | ✅ |
-| Configurable timers per state | ❌ | ✅ |
-| Custom state labels | ❌ | ✅ |
-| Prioritization logic (GPS vs. Wi-Fi) | rudimentary | detailed |
+| Feature                               | HA Native   | Better Presence |
+| ------------------------------------- | ----------- | --------------- |
+| `home` / `not_home`                   | ✅          | ✅              |
+| Zones                                 | ✅          | ✅              |
+| **"Just arrived"** (transition state) | ❌          | ✅              |
+| **"Just left"** (transition state)    | ❌          | ✅              |
+| **"Far away"** (distance threshold)   | ❌          | ✅              |
+| Configurable timers per state         | ❌          | ✅              |
+| Custom state labels                   | ❌          | ✅              |
+| Prioritization logic (GPS vs. Wi-Fi)  | rudimentary | detailed        |
 
 **The core problem with native HA:** Device trackers flap — especially ping/nmap and GPS. If someone briefly loses Wi-Fi or GPS jumps for a moment, `person.thomas` immediately switches to `not_home`. Automations ("turn on lights when Thomas comes home") then fire multiple times or at the wrong moment.
 
@@ -41,21 +41,21 @@ All state labels are fully customizable (e.g. "Zuhause", "Gerade angekommen").
 - Want to reliably combine multiple trackers per person
 - Want to use custom state labels in automations and dashboards
 
-
 ## Multi-Tracker Prioritization
 
 When multiple trackers are assigned to a person, Better Presence aggregates them with this priority:
 
-| Tracker type | Home detection |
-|---|---|
-| ping / nmap / router | Immediately `home` — no GPS delay |
-| Mobile App (GPS), updated < 60 min ago | Counts as `home` |
-| Mobile App (GPS), older than 60 min | Ignored — GPS data considered stale |
-| Mobile App away / in zone | Used for away state and zone name |
+| Tracker type                           | Home detection                      |
+| -------------------------------------- | ----------------------------------- |
+| ping / nmap / router                   | Immediately `home` — no GPS delay   |
+| Mobile App (GPS), updated < 60 min ago | Counts as `home`                    |
+| Mobile App (GPS), older than 60 min    | Ignored — GPS data considered stale |
+| Mobile App away / in zone              | Used for away state and zone name   |
 
 If ping says `home` and GPS says `not_home`, the person is considered home. Non-GPS trackers win for home detection; GPS is used for zones and distance.
 
 ---
+
 ## The Resulting Entity
 
 Each person gets a `device_tracker.better_presence_<id>` entity with:
@@ -63,17 +63,13 @@ Each person gets a `device_tracker.better_presence_<id>` entity with:
 - **State**: one of the configured labels (e.g. `Home`, `Just arrived`, `Away`)
 - **Attributes**: `friendly_name`, and if a GPS tracker is assigned: `latitude`, `longitude`, `gps_accuracy`, `battery_level`, `distance` (km from home)
 
-
-
 ## Installation
-
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=corgan2222&repository=better_presence2&category=integration)
 
-then 
+then
 
 [![Add Integration to your Home Assistant instance.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=better_presence)
-
 
 ### Via HACS
 
@@ -87,9 +83,8 @@ then
 1. Copy the `better_presence` folder into your `config/custom_components/` directory.
 2. Restart Home Assistant.
 3. Go to **Settings → Devices & Services → Add Integration** and search for **Better Presence**.
+
 ---
-
-
 
 ## Setup
 
@@ -97,36 +92,35 @@ then
 
 Configure the timing and state labels for all persons. These can be changed later via the integration's **Configure** button.
 
-| Field | Description | Default |
-| --- | --- | --- |
-| Just Arrived duration | Seconds to stay in "Just arrived" before switching to "Home" | 300 |
-| Just Left duration | Seconds to stay in "Just left" before switching to "Away" | 60 |
-| Home label | State value shown when at home | Home |
-| Just Arrived label | State value for the arrival buffer | Just arrived |
-| Just Left label | State value for the departure buffer | Just left |
-| Away label | State value when confirmed away | Away |
-| Far Away label | State value when away beyond the distance threshold | Far away |
-| Far Away distance | Distance in km that triggers "Far away" (0 = disabled) | 0 |
-
+| Field                 | Description                                                  | Default      |
+| --------------------- | ------------------------------------------------------------ | ------------ |
+| Just Arrived duration | Seconds to stay in "Just arrived" before switching to "Home" | 300          |
+| Just Left duration    | Seconds to stay in "Just left" before switching to "Away"    | 60           |
+| Home label            | State value shown when at home                               | Home         |
+| Just Arrived label    | State value for the arrival buffer                           | Just arrived |
+| Just Left label       | State value for the departure buffer                         | Just left    |
+| Away label            | State value when confirmed away                              | Away         |
+| Far Away label        | State value when away beyond the distance threshold          | Far away     |
+| Far Away distance     | Distance in km that triggers "Far away" (0 = disabled)       | 0            |
 
 ## States
 
-| State | When |
-|---|---|
-| **Just arrived** | Tracker says `home`, but person was away — waits N seconds before confirming |
-| **Home** | Confirmed home after the Just arrived timer expires |
-| **Just left** | Tracker says `not_home`, but person was home — waits N seconds before confirming |
-| **Away** | Confirmed away after the Just left timer expires |
-| **Far away** | Away and beyond a configurable distance threshold (GPS required) |
+| State            | When                                                                             |
+| ---------------- | -------------------------------------------------------------------------------- |
+| **Just arrived** | Tracker says `home`, but person was away — waits N seconds before confirming     |
+| **Home**         | Confirmed home after the Just arrived timer expires                              |
+| **Just left**    | Tracker says `not_home`, but person was home — waits N seconds before confirming |
+| **Away**         | Confirmed away after the Just left timer expires                                 |
+| **Far away**     | Away and beyond a configurable distance threshold (GPS required)                 |
 
 All state labels are fully customizable (e.g. "Zuhause", "Gerade angekommen").
-
 
 ## Step 2 — Add a Person
 
 After installation, click **Configure** on the integration to manage persons.
 
 **Step 1: Name**
+
 - **Sensor entity ID** — the technical identifier used in automations and templates. Example: `stefan_bp2` creates `device_tracker.better_presence_stefan_bp2`.
 - **Display name** — the friendly name shown in the UI. Example: `Stefan BP2`.
 
@@ -134,23 +128,22 @@ After installation, click **Configure** on the integration to manage persons.
 Select one or more device trackers to combine for this person.
 
 Recommended setup:
+
 - **Mobile App tracker** — provides GPS, zones, and battery level.
 - **ping or nmap tracker** — binary but reliable for home detection.
 
 When multiple trackers are assigned, Better Presence aggregates them with this priority:
 
-| Tracker type | Home detection |
-|---|---|
-| ping / nmap / router | Immediately `home` — no GPS delay |
-| Mobile App (GPS), updated < 60 min ago | Counts as `home` |
-| Mobile App (GPS), older than 60 min | Ignored — GPS data considered stale |
-| Mobile App away / in zone | Used for away state and zone name |
+| Tracker type                           | Home detection                      |
+| -------------------------------------- | ----------------------------------- |
+| ping / nmap / router                   | Immediately `home` — no GPS delay   |
+| Mobile App (GPS), updated < 60 min ago | Counts as `home`                    |
+| Mobile App (GPS), older than 60 min    | Ignored — GPS data considered stale |
+| Mobile App away / in zone              | Used for away state and zone name   |
 
 If ping says `home` and GPS says `not_home`, the person is considered home. Non-GPS trackers win for home detection; GPS is used for zones and distance.
 
 ---
-
-
 
 ## Using the States in Automations
 
@@ -196,16 +189,17 @@ For testing automations without real hardware. Injects a fake tracker state dire
 
 **Service:** `better_presence.simulate_tracker`
 
-| Parameter | Required | Description |
-|---|---|---|
-| `person_id` | Yes | ID of the person (e.g. `stefan_bp2`) |
-| `device` | Yes | Entity ID of the tracker to simulate (e.g. `device_tracker.stefan_ping`) |
-| `state` | Yes | `home`, `not_home`, or a zone name |
-| `source_type` | No | `router`, `bluetooth`, `gps`, `bluetooth_le` (default: `router`) |
-| `latitude` | No | GPS latitude (only relevant when `source_type: gps`) |
-| `longitude` | No | GPS longitude (only relevant when `source_type: gps`) |
+| Parameter     | Required | Description                                                              |
+| ------------- | -------- | ------------------------------------------------------------------------ |
+| `person_id`   | Yes      | ID of the person (e.g. `stefan_bp2`)                                     |
+| `device`      | Yes      | Entity ID of the tracker to simulate (e.g. `device_tracker.stefan_ping`) |
+| `state`       | Yes      | `home`, `not_home`, or a zone name                                       |
+| `source_type` | No       | `router`, `bluetooth`, `gps`, `bluetooth_le` (default: `router`)         |
+| `latitude`    | No       | GPS latitude (only relevant when `source_type: gps`)                     |
+| `longitude`   | No       | GPS longitude (only relevant when `source_type: gps`)                    |
 
 **Example — simulate arriving home via ping:**
+
 ```yaml
 service: better_presence.simulate_tracker
 data:
@@ -216,6 +210,7 @@ data:
 ```
 
 **Example — simulate being far away via GPS:**
+
 ```yaml
 service: better_presence.simulate_tracker
 data:

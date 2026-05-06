@@ -1,6 +1,7 @@
+---
 name: Lint
 
-on:
+"on":
   push:
     branches:
       - "main"
@@ -16,10 +17,16 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Checkout the repository
+        # yamllint disable rule:line-length
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        # yamllint enable rule:line-length
+        with:
+          persist-credentials: false
 
       - name: Set up Python
+        # yamllint disable rule:line-length
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        # yamllint enable rule:line-length
         with:
           python-version: "3.14"
           cache: "pip"

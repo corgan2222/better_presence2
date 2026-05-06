@@ -1,20 +1,35 @@
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+---
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/
+# configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
-  - package-ecosystem: "devcontainers"
+  - package-ecosystem: "devcontainers" # zizmor: ignore[dependabot-cooldown]
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
 
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: "github-actions" # zizmor: ignore[dependabot-cooldown]
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
 
-  - package-ecosystem: "pip"
+  - package-ecosystem: "pip" # zizmor: ignore[dependabot-cooldown]
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
     ignore:
-      # Dependabot should not update Home Assistant as that should match the homeassistant key in hacs.json
+      # Dependabot should not update Home Assistant as that should match
+      # the homeassistant key in hacs.json
       - dependency-name: "homeassistant"
