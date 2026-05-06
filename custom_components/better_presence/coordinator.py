@@ -48,6 +48,7 @@ class PersonTrackingState:
         self.friendly_name = friendly_name
         self.state: str = ""
         self.attributes: dict[str, Any] = {"friendly_name": friendly_name}
+        self.available: bool = False
         self._cancel_timer: Callable | None = None
 
 
@@ -61,6 +62,7 @@ class BetterPresenceCoordinator:
         self._unsub_listeners: list[Callable] = []
         self._update_callbacks: list[Callable] = []
         self._last_known_tracker_states: dict[str, Any] = {}
+        self._unavailable_logged: dict[str, bool] = {}
 
         for person in config.get(CONF_PERSONS, []):
             pid = person[CONF_PERSON_ID]
@@ -187,7 +189,23 @@ class BetterPresenceCoordinator:
         if raw is None:
             # All trackers unavailable and no cached state yet — preserve
             # current state so a restart never triggers arrival/departure transitions.
+            if not self._unavailable_logged.get(person_id):
+                _LOGGER.warning(
+                    "Better Presence: %s — all trackers unavailable or unknown",
+                    person_id,
+                )
+                self._unavailable_logged[person_id] = True
+            person_state.available = False
+            for cb in self._update_callbacks:
+                cb(person_id)
             return
+        # Trackers back online — log recovery once
+        if self._unavailable_logged.get(person_id):
+            _LOGGER.info(
+                "Better Presence: %s — trackers back online",
+                person_id,
+            )
+            self._unavailable_logged[person_id] = False
         current = person_state.state
 
         # Zone name: any raw state that is neither "home" nor "not_home"
@@ -419,6 +437,7 @@ class BetterPresenceCoordinator:
     ) -> None:
         ps = self._persons[person_id]
         ps.state = new_state
+        ps.available = True
         ps.attributes = {"friendly_name": ps.friendly_name}
         if devices:
             ps.attributes.update(self._get_gps_attributes(devices))

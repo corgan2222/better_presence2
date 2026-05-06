@@ -46,6 +46,11 @@ class BetterPresenceEntity(TrackerEntity):
         return ps.friendly_name if ps else self._person_id
 
     @property
+    def available(self) -> bool:
+        ps = self._coordinator.get_person_state(self._person_id)
+        return ps.available if ps else False
+
+    @property
     def source_type(self) -> SourceType:
         ps = self._coordinator.get_person_state(self._person_id)
         if ps and ps.attributes.get("source_type") == "gps":

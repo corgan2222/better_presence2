@@ -30,9 +30,10 @@ ignore = [
     "SLF001",
     # commented-out code — used for explanatory inline notes
     "ERA001",
-    # too many branches/arguments — state machine is intentionally complex
+    # too many branches/arguments/statements — state machine is intentionally complex
     "PLR0912",
     "PLR0913",
+    "PLR0915",
     # magic values — thresholds are self-documenting
     "PLR2004",
     # uppercase variable names — math convention (R in haversine)
