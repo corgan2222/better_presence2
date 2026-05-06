@@ -1,31 +1,31 @@
 """Tests for GPS attribute collection and Far Away logic."""
 
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
-from datetime import datetime, timezone, timedelta
 
-from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 from custom_components.better_presence.const import (
-    DEFAULT_AWAY_STATE,
-    DEFAULT_FAR_AWAY_STATE,
-    CONF_TRACKING,
-    CONF_PERSONS,
-    CONF_PERSON_ID,
-    CONF_PERSON_FRIENDLY_NAME,
-    CONF_PERSON_DEVICES,
-    CONF_JUST_ARRIVED_TIME,
-    CONF_JUST_LEFT_TIME,
+    CONF_AWAY_STATE,
+    CONF_FAR_AWAY_DISTANCE,
+    CONF_FAR_AWAY_STATE,
     CONF_HOME_STATE,
     CONF_JUST_ARRIVED_STATE,
+    CONF_JUST_ARRIVED_TIME,
     CONF_JUST_LEFT_STATE,
-    CONF_AWAY_STATE,
-    CONF_FAR_AWAY_STATE,
-    CONF_FAR_AWAY_DISTANCE,
-    DEFAULT_JUST_ARRIVED_TIME,
-    DEFAULT_JUST_LEFT_TIME,
+    CONF_JUST_LEFT_TIME,
+    CONF_PERSON_DEVICES,
+    CONF_PERSON_FRIENDLY_NAME,
+    CONF_PERSON_ID,
+    CONF_PERSONS,
+    CONF_TRACKING,
+    DEFAULT_AWAY_STATE,
+    DEFAULT_FAR_AWAY_STATE,
     DEFAULT_HOME_STATE,
     DEFAULT_JUST_ARRIVED_STATE,
+    DEFAULT_JUST_ARRIVED_TIME,
     DEFAULT_JUST_LEFT_STATE,
+    DEFAULT_JUST_LEFT_TIME,
 )
+from custom_components.better_presence.coordinator import BetterPresenceCoordinator
 
 
 def make_hass_with_gps(
@@ -34,11 +34,7 @@ def make_hass_with_gps(
     hass = MagicMock()
     hass.config.latitude = 48.1351
     hass.config.longitude = 11.5820
-    updated = (
-        (datetime.now(timezone.utc) - timedelta(hours=2))
-        if stale
-        else datetime.now(timezone.utc)
-    )
+    updated = (datetime.now(UTC) - timedelta(hours=2)) if stale else datetime.now(UTC)
     s = MagicMock()
     s.state = state
     s.attributes = {
@@ -137,8 +133,8 @@ def test_no_gps_attributes_when_no_gps_tracker():
     s = MagicMock()
     s.state = "not_home"
     s.attributes = {}  # No source_type
-    s.last_changed = datetime.now(timezone.utc)
-    s.last_updated = datetime.now(timezone.utc)
+    s.last_changed = datetime.now(UTC)
+    s.last_updated = datetime.now(UTC)
     hass.states.get = lambda _: s
     coord = make_coord(hass)
     attrs = coord._get_gps_attributes(["device_tracker.thomas_ping"])

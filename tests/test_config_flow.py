@@ -1,6 +1,6 @@
 """Tests for BetterPresence Config Flow and Options Flow."""
 
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 from homeassistant import config_entries, data_entry_flow
 from homeassistant.core import HomeAssistant
