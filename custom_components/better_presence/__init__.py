@@ -7,6 +7,7 @@ import logging
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN, PLATFORMS
@@ -66,11 +67,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 None,
             )
             if coord is None:
-                _LOGGER.error(
-                    "Better Presence: no coordinator found for person %s",
-                    person_id,
+                msg = (
+                    f"Person '{person_id}' not found in Better Presence. "
+                    "Check the person_id matches one configured in the integration."
                 )
-                return
+                raise ServiceValidationError(msg)
             coord.simulate_tracker(
                 person_id=person_id,
                 device=call.data["device"],
